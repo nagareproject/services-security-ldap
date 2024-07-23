@@ -44,6 +44,13 @@ class Authentication(form_auth.Authentication):
             super(Authentication, self).__init__,
             name,
             dist,
+            host=host,
+            port=port,
+            revalidate=revalidate,
+            user_dn=user_dn,
+            user_filter=user_filter,
+            user_attrs=user_attrs,
+            timeout=timeout,
             **config,
         )
         if not revalidate and not self.encrypted:
