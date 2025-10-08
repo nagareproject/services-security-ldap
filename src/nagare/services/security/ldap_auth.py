@@ -1,7 +1,5 @@
-# Encoding: utf-8
-
 # --
-# Copyright (c) 2008-2024 Net-ng.
+# Copyright (c) 2008-2025 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
@@ -41,7 +39,7 @@ class Authentication(form_auth.Authentication):
         **config,
     ):
         services_service(
-            super(Authentication, self).__init__,
+            super().__init__,
             name,
             dist,
             host=host,
@@ -73,13 +71,14 @@ class Authentication(form_auth.Authentication):
         return {k: v for k, v in credentials.items() if k in to_keep}
 
     def to_cookie(self, principal, **credentials):
-        return super(Authentication, self).to_cookie(
+        return super().to_cookie(
             principal,
             _auth=int(not self.revalidate),
             **self.filter_credentials(credentials, {'password'}),
         )
 
     def retrieve_credentials(self, uid, password):
+        uid = ldap.dn.escape_dn_chars(uid)
         credentials = {}
 
         user_dn = self.user_dn.format(uid=uid)
@@ -94,7 +93,7 @@ class Authentication(form_auth.Authentication):
             search_result = connection.search_st(
                 user_dn,
                 ldap.SCOPE_BASE,
-                self.user_filter,
+                self.user_filter and self.user_filter.format(uid=uid),
                 (self.user_attrs + ['uid']) if self.user_attrs else [],
                 False,
                 self.timeout,
@@ -107,7 +106,7 @@ class Authentication(form_auth.Authentication):
         return credentials
 
     def get_principal(self, request, **params):
-        principal, credentials, response = super(Authentication, self).get_principal(request, **params)
+        principal, credentials, response = super().get_principal(request, **params)
 
         password = credentials.get('password')
         revalidate = not credentials.pop('_auth', False)
