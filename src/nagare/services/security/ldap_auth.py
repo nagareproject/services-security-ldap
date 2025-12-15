@@ -13,16 +13,15 @@ from nagare.services.security import form_auth
 
 
 class Authentication(form_auth.Authentication):
-    CONFIG_SPEC = dict(
-        form_auth.Authentication.CONFIG_SPEC,
-        host='string(default="127.0.0.1", help="LDAP server hostname")',
-        port='integer(default={}, help="server port")'.format(ldap.PORT),
-        revalidate='boolean(default=True)',
-        user_dn='string(help="dn with `{uid}` placeholder")',
-        user_filter='string(default=None)',
-        user_attrs='string_list(default=list())',
-        timeout='integer(default=-1, help="communication timeout")',
-    )
+    CONFIG_SPEC = form_auth.Authentication.CONFIG_SPEC | {
+        'host': 'string(default="127.0.0.1", help="LDAP server hostname")',
+        'port': 'integer(default={}, help="server port")'.format(ldap.PORT),
+        'revalidate': 'boolean(default=True)',
+        'user_dn': 'string(help="dn with `{uid}` placeholder")',
+        'user_filter': 'string(default=None)',
+        'user_attrs': 'string_list(default=list())',
+        'timeout': 'integer(default=-1, help="communication timeout")',
+    }
 
     def __init__(
         self,
